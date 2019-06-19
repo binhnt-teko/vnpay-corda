@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.corda:jline2:5ed980ec0c314d68c47b2481e19e7e3a3013f82f">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/corda/jline2/5ed980ec0c314d68c47b2481e19e7e3a3013f82f/jline2-5ed980ec0c314d68c47b2481e19e7e3a3013f82f.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/corda/jline2/5ed980ec0c314d68c47b2481e19e7e3a3013f82f/jline2-5ed980ec0c314d68c47b2481e19e7e3a3013f82f-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/corda/jline2/5ed980ec0c314d68c47b2481e19e7e3a3013f82f/jline2-5ed980ec0c314d68c47b2481e19e7e3a3013f82f-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

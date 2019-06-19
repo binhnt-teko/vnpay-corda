@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cli" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/connectors" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/connectors/ssh" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/connectors/telnet" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/connectors/web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/distrib" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/cookbook" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/doc/reference" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/embed" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/embed/spring" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/packaging" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/cron" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/mail" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shell" charset="UTF-8" />
+  </component>
+</project>

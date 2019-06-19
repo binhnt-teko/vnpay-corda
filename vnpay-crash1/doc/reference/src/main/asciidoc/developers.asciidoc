@@ -1,0 +1,944 @@
+[[developers]]
+= Developers
+
+[[developping_commands]]
+== Developping commands
+
+Early CRaSH versions of CRaSH were targetting Groovy only, since version 1.3, CRaSH has become polyglot and
+can work potentially with any language supported by the JVM. The Java language is now supported out of the box
+along with Groovy.
+
+In this section we will describe commands written in the Java or/and http://groovy.codehaus.org[Groovy] languages.
+These two JVM languages share a lot and often valid Java code is also valid Groovy code (obviously the converse is not true).
+
+Each command has a corresponding source ending with _.java_ or _.groovy_ file that contains a command class
+that will be invoked by the shell. The files are usually located in:
+
+* _/crash/commands/_ path of jar files
+* _cmd_ directory for the standalone distribution
+* _/WEB-INF/crash/commands_ directory for the web archive deployment
+
+When CRaSH is embedded by a runtime, CRaSH commands can be in other places, please refer to the documentation
+of your runtime.
+
+Commands can directly be placed in the commands directory; however they can also be placed in a sub directory of the
+command directory, which is useful to group commands of the same kind.
+
+In addition of that there are two special files called _login.groovy_ and _logout.groovy_ that are executed upon login
+and logout of a user. They are useful to setup and cleanup things related to the current user session.
+
+Commands are annotated classes, such class can be a _simple_ command or a _git-style_ command.
+The _cli_ framework provides conventions and a set of annotations for easily writing commands with
+options and arguments in a very declarative manner.
+
+=== Simple command
+
+Let's study a simple class command example:
+
+[source,groovy]
+----
+import org.crsh.cli.Command;
+import org.crsh.cli.Usage;
+import org.crsh.cli.Option;
+
+class date {
+  @Usage("show the current time")
+  @Command
+  Object main(
+     @Usage("the time format")
+     @Option(names=["f","format"])
+     String format) {
+    if (format == null)
+      format = "EEE MMM d HH:mm:ss z yyyy";
+    def date = new Date();
+    return date.format(format);
+  }
+}
+----
+
+The _date_ command is pretty straightforward to understand:
+
+* The +@Command+ annotation declares the +main+ method as a command
+* The command takes one optional +format+ option declared by the +@Option+ annotation
+* The +@Usage+ annotation describes the usage of the command and its parameters
+
+----
+% date
+Thu Apr 19 15:44:05 CEST 2012
+----
+
+NOTE: the +main+ name is a convention for simple commands. Another name would create a git-style
+command instead.
+
+The +@Usage+ annotation is important because it gives a human description of the command to the user:
+
+----
+% date -h
+usage: date [-h | --help] [-f | --format]
+
+   [-h | --help]   command usage
+   [-f | --format] the time format
+----
+
+=== Sub commands
+
+A class can hold several commands allowing a single file to group several commands, let's study the JDBC command
+structure:
+
+[source,groovy]
+----
+@Usage("JDBC connection")
+class jdbc {
+
+  @Usage("connect to database with a JDBC connection string")
+  @Command
+  public String connect(
+          @Usage("The username")
+          @Option(names=["u","username"])
+          String user,
+          @Usage("The password")
+          @Option(names=["p","password"])
+          String password,
+          @Usage("The extra properties")
+          @Option(names=["properties"])
+          Properties properties,
+          @Usage("The connection string")
+          @Argument
+          String connectionString) {
+     ...
+  }
+
+  @Usage("close the current connection")
+  @Command
+  public String close() {
+     ...
+  }
+}
+----
+
+We can see that the class declares two commands +connect+ and +close+, they are invoked this way:
+
+----
+% jdbc connect jdbc:derby:memory:EmbeddedDB;create=true
+Connected to data base : jdbc:derby:memory:EmbeddedDB;create=true
+% jdbc close
+Connection closed
+----
+
+=== Java commands
+
+The previous examples focused on the Groovy language, let's see how we can do the same in Java:
+
+[source,java]
+----
+import org.crsh.command.*;
+import org.crsh.cli.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
+public class date extends BaseCommand {
+  @Usage("show the current time")
+  @Command
+  public Object main(@Usage("the time format") @Option(names={"f","format"}) String format) {
+    if (format == null)
+      format = "EEE MMM d HH:mm:ss z yyyy";
+    Date date = new Date();
+    SimpleDateFormat formatter = new SimpleDateFormat(format);
+    return formatter.format(date);
+  }
+}
+----
+
+Beside the fact that the Java version is a bit more verbose, let's outline the noticeable differences:
+
+* the command must extend the +org.crsh.command.BaseCommand+ class: the main reason is that the +BaseCommand+ class
+ provides contextual state managed by CRaSH, like the +context+ or +out+ fields. A Groovy command doesn't need to inherit
+ explicitly, but CRaSH will make it extend this class using Groovy annotation processing.
+* the modifier _public_ is required for the class declaration and the command method declarations
+* the option declaration uses curly braces (_names={"f","format"}_) instead of brackets (_names=["f","format"]_)
+
+NOTE: if you need a more torough example of a Java command, you can read the source code of the _jmx_ command
+written in Java
+
+=== Command line annotations
+
+Let's study the various annotations the _cli_ framework provides for declaring a command.
+
+==== +@org.crsh.cli.Command+
+
+Defines a command method, when using a simple command the method should be named +main+:
+
+[source,groovy]
+----
+public class sample {
+
+  @Command
+  public void main() {
+    ...
+  }
+}
+----
+
+Using this annotation automatically turns a class into a class command. _git-style_ commands simply declares several methods:
+
+[source,groovy]
+----
+public class sample {
+
+  @Command
+  public void sub1() {
+    ...
+  }
+
+  @Command
+  public void sub2() {
+    ...
+  }
+}
+----
+
+==== +@org.crsh.cli.Named+
+
+Overrides the default command name, the command name must follow these rules:
+
+* it must not be empty
+* the first letter must be a letter
+* the other letters must be
+** a letter
+** a digit
+** the +_+ or +-+ character
+
+[source,groovy]
+----
+public class sample {
+   @Command
+   @Named("bar")
+   public void m() {
+     ...
+   }
+}
+----
+
+NOTE: only sub command can use this annotation as the global command name is provided by the script name of the command
+
+==== +@org.crsh.cli.Option+
+
+Declares an option, the _names_ member must be specified: single letter name are turned into posix style option (single hyphen)
+other names are turned into GNU style option (double hyphen). Several names can specified as aliases of the same option.
+Options can be declared as method parameters or a class fields.
+
+[source,groovy]
+----
+public class sample {
+
+  @Option(names = ["o", "opt1"])
+  private String opt1;
+
+  @Command
+  public void sub1(@Option(names = ["opt2"]) String opt2) {
+    ...
+  }
+}
+----
+
+----
+> sample foo
+> sample -o foo
+> sample --opt1 foo sub1
+> sample sub1 --opt2 bar
+> sample --opt1 foo foo sub1 --opt2 bar
+----
+
+==== +@org.crsh.cli.Argument+
+
+Declares an argument, this annotation should be used as method parameters only.
+
+[source,groovy]
+----
+public class sample {
+
+  @Command
+  public void sub1(@Argument String arg) {
+    ...
+  }
+}
+----
+
+----
+> sample sub1
+> sample sub1 foo
+----
+
+==== +@org.crsh.cli.Required+
+
+By default a parameter is optional, the +@Required+ annotation can be used to force the user to specify a parameter:
+
+[source,groovy]
+----
+public class sample {
+
+  @Command
+  public void sub1(@Required @Argument String arg) {
+    ...
+  }
+}
+----
+
+==== +@org.crsh.cli.Usage+ and +@org.crsh.cli.Man+
+
+Those annotations are useful for documenting commands help and manual:
+
+[source,groovy]
+----
+@Usage("sample commands")
+public class sample {
+
+  @Command
+  @Usage("command description, begins with lower case")
+  @Man("Verbose descrition of the argument, it should begin with an upper case")
+  public void sub1(
+    @Usage("argument description, begins with a lower case")
+    @Man("Verbose description of the argument, it should begin with an upper case")
+    @Argument String arg) {
+    ...
+  }
+}
+----
+
+* +@Usage+ specifies the usage, a short description, preferably starting with a lower case
+* +@Man+ provides the manual, a verbose description, preferably starting with an upper case
+
+==== Parameter annotations: Don't Repeat Yourself
+
+When one or several commands uses the same parameter (option or argument), there is the opportunity to avoid repetition and
+ define a custom annotation that can be used for declaring the parameter:
+
+[source,java]
+----
+@Retention(RetentionPolicy.RUNTIME)
+@Usage("A color")
+@Option(names = "c")
+public @interface PathOption {
+}
+----
+
+The annotation can then be used instead for declaring an option:
+
+[source,java]
+----
+public class mycommand {
+  @Command
+  public void foo(@ColorOption String color) {
+    ...
+  }
+  @Command
+  public void bar(@ColorOption String color) {
+    ...
+  }
+}
+----
+
+=== Parameter multiplicity
+
+The multiplicity is the number of values expected by a parameter, the multiplicity with simple types is always 1. The arity can
+also be _several_ when the +java.util.List+ type is used.
+
+[source,java]
+----
+public class sample {
+
+  @Command
+  public void sub1(@Option(names = ["o"]) List<String> opts) {
+    ...
+  }
+}
+----
+
+The option can now accept several values:
+
+----
+> sample sub1 -o foo -o bar
+----
+
+=== Parameter types
+
+Option and argument parameters are represented by _simple_ types. The string type is universal and will
+work with any value provided by the user, other types will require parsing.
+
+==== Builtin types
+
+CRaSH provides supports a few builtin simple types other than string:
+
+* +Integer+ type
+* +Boolean+ type
+* +java.util.Properties+ type
+* +javax.management.ObjectName+ type
+* +java.io.File+ type with file completion
+* +Enum+ types
+
+Boolean type is special because it does not need a value when combined with options. The option declaration is enough
+to set the value to true:
+
+[source,groovy]
+----
+public class sample {
+
+  @Command
+  public void sub1(@Option(names = ["o"]) Boolean opt) {
+    ...
+  }
+}
+----
+
+The option will be true with:
+
+----
+> sample sub1 -o
+----
+
+==== Providing your own type
+
+Providing a custom type is possible, CRaSH uses the +ServiceLoader+ discovery mechanism to discover custom types. Custom
+types are implemented by a +org.crsh.cli.type.ValueType+ subclass and implement its +parse+ method:
+
+[source,java]
+.Our custom value type
+----
+package my;
+
+public class CustomValueType extends ValueType<Custom> {
+
+  public CustomValueType() {
+    super(Custom.class); // <1>
+  }
+
+  @Override
+  public <S extends Custom> S parse(Class<S> type, String s) throws Exception {
+    return type.cast(new Custom(s)); // <2>
+  }
+}
+----
+<1> The custom type is passed to the super class
+<2> The parse method should reutrn an instance of the type
+
+NOTE: The +parse+ method uses the +<S>+ generic type because the implementation of enum types has an effective
+ type which is a subclass of the base enum type.
+
+In order to make the custom type discovered by CRaSH, a file named _org.crsh.cli.type.ValueType_ should be placed
+in the _/META-INF/services/_ directory of the jar containing the custom value type:
+
+.The custom value type declared in META-INF/services/org.crsh.cli.type.ValueType
+----
+my.CustomValueType
+----
+
+== Adding style
+
+CRaSH adds (since version 1.1) the support for colored text and text decoration. Each portion of text printed
+ has three style attributes:
+
+* _Decoration_: bold, underline or blink, as the +org.crsh.text.Decoration+ enum.
+* _Foreground_ color.
+* _Background_ color.
+
+Available colors are grouped as the +org.crsh.text.Color+ enum:
+
+[cols="2*", frame="none", grid="none"]
+|===
+a|
+* [black]#black#
+* [red]#red#
+* [green]#green#
+* [yellow]#yellow#
+
+a|
+* [blue]#blue#
+* [fuchsia]#magenta#
+* [aqua]#cyan#
+* [white black-background]#white#
+|===
+
+Decoration and colors can be applied with overloaded +print+ and +println+ methods provided by the +ShellPrinterWriter+.
+This printer is available as the implicit _out_ attribute or thanks to the +<<command_context,context>>.getWriter()+
+method.
+
+[source,groovy]
+.Decorating and coloring text
+----
+out.println("hello", red); // <1>
+out.println("hello", red, blue); // <2>
+out.println("hello", underline, red, blue); // <3>
+----
+<1> Print hello in red color
+<2> Print hello in red with a red blue
+<3> Print hello in red underlined with a red blue
+
+The combination of the decoration, background and foreground colors is a _style_ represented by the +org.crsh.text.Style+
+object. Styles can be used like decoration and colors:
+
+[source,groovy]
+.Printing styled text
+----
+out.println("hello", style(red)); // <1>
+out.println("hello", style(red, blue)); // <2>
+out.println("hello", style(underline, red, blue)); // <3>
+----
+<1> Print hello in red color
+<2> Print hello in red with a red blue
+<3> Print hello in red underlined with a red blue
+
+When using the print methods, the style will be used for the currently printed object. It is possible to change the
+style permanently (until it is reset) using Groovy _leftshift_ operator: +<<+
+
+By default the +<<+ operator prints output on the console. The +ShellPrintWriter+ overrides the operator to work
+with color, decoration and styles:
+
+[source,groovy]
+.Styling with the leftshift operator
+----
+out << red // <1>
+out << underline // <2>
+out << "hello" // <3>
+out << reset; // <4>
+----
+<1> Set red foreground color
+<2> Set underline
+<3> Print hello in underlined red
+<4> Reset style
+
+Operators can also be combined on the same line providing a more compact syntax:
+
+[source,groovy]
+----
+out << red << underline << "hello" << reset
+----
+
+[source,groovy]
+----
+out << style(underline, red, blue) << "hello" << reset
+----
+
+NOTE: Throughout the examples we have used decoration, color and styles. CRaSH automatically imports those classes so
+they can be used out of the box in any CRaSH command without requiring prior import.
+
+[[command_context]]
+== Command context
+
+During the execution of a command, CRaSH provides a _context_ for interacting with it:
+
+* the property _context_ is resolved to an instance of +org.crsh.command.InvocationContext+
+* the invocation context class extends the +org.crsh.command.CommandContext+.
+
+Let's have a look at those types:
+
+////
+[source,java]
+.The command context
+----
+include::{sourcesdir}/org/crsh/command/CommandContext.java[tags=javadoc;classdef]
+----
+////
+
+[source,java]
+.The command context
+----
+include::{sourcesdir}/org/crsh/command/CommandContext.java[lines=26..-1]
+----
+
+The +CommandContext+ provides access to the shell session as a +Map<String, Object>+. Session attributes
+can be accessed using this map, but they are also accessible as Groovy script properties. It means that writing such
+code will be equivalent:
+
+[source,groovy]
+.Using shell session
+----
+context.session["foo"] = "bar"; // <1>
+out.println(bar); // <2>
+----
+<1> Bind the session attribute foo with the value bar
+<2> The bar is resolved as an session attribute by Groovy
+
+The +CommandContext+ provides also access to the shell attributes as a +Map<String, Object>+. Context attributes
+are useful to interact with object shared globally by the CRaSH environment:
+
+* When embedded in a web application context, attributes resolves to servlet context attributes.
+* When embedded in Spring context, attributes resolve to Spring objects:
+** _attributes.factory_ returns the Spring factory
+** _attributes.beans_ returns Spring beans, for example _attribute.beans.telnet_ returns the _telnet_ bean
+* When attached to a virtual machine, the context attributes has only a single +instrumentation+ entry
+ that is the +java.lang.instrument.Instrumentation+ instance obtained when attaching to a virtual machine.
+
+[source,groovy]
+.Obtaining a Spring bean
+----
+def bean = context.attributes.beans["TheBean"];
+----
+
+Now let's examine the +InvocationContext+ that extends the +CommandContext+:
+
+////
+[source,java]
+.The invocation context
+----
+include::{sourcesdir}/org/crsh/command/InvocationContext.java[tags=javadoc;classdef]
+----
+////
+
+[source,java]
+.The invocation context
+----
+include::{sourcesdir}/org/crsh/command/InvocationContext.java[lines=26..-1]
+----
+
+The +PrintWriter+ object is the command output, it can be used also via the _out_ property in Groovy scripts:
+
+[source,groovy]
+.Printing on the shell
+----
+context.writer.print("Hello"); // <1>
+out.print("hello"); // <2>
+----
+<1> Printing using the context writer
+<2> Printing using the _out_
+
+The +readLine+ method can be used to get interactive information from the user during the execution of a command.
+
+[source,groovy]
+.Reading on the console
+----
+def age = context.readLine("How old are you?", false);
+----
+
+== Object pipeline
+
+One of the most powerful feature of CRaSH is the object pipeline. CRaSH commands can consume and produce objects
+allowing the creation of object pipelines by combining commands. Writing such commands is very easy, in fact
+*any* CRaSH command can be combined in a pipe. Indeed a command that merely prints text, is a command that
+produces character data in the pipe.
+
+=== Producer commands
+
+Until now we have seen how to use annotations of the _cli_ framework to create commands. The logic of
+this kind of command is executed in +@Command+ annotated methods and it produces character data either by
+writing text to the output or by returning a string. Such command is called a _producer_ command because
+it creates a stream of data but does not consume anything. Producer commands can produce other objects
+than text.
+
+Since CRaSH 1.3 the man page of a command gives details about the object it can consume and produce, let's
+look at the man page of the _env_ command:
+
+----
+% man env
+NAME
+       env - display the term env
+
+SYNOPSIS
+       env [-h | --help]
+
+STREAM
+       env <java.lang.Void, java.lang.Object>
+
+PARAMETERS
+       [-h | --help]
+           Display this help message
+----
+
+The _STREAM_ section tells us that the _env_ commands consumes the +Void+ type and produces the +Object+
+type. In fact by default any command is a producer command that can produce any object (+<java.lang.Object>+) and consume
+none (+<java.lang.Void>+).
+
+Producing any object is easy, the command just need to return it, let's see an example
+
+[source,groovy]
+----
+@Command
+Map main() {
+  return  Thread.currentThread()
+}
+----
+
+Let's print its man page:
+
+----
+% man test
+NAME
+       test
+
+SYNOPSIS
+       test [-h | --help]
+
+STREAM
+       test <java.lang.Void, java.lang.Thread>
+
+PARAMETERS
+       [-h | --help]
+           Display this help message
+----
+
+If you invoke you might expect to read +Thread[ppool-1-thread-10,5,main]+ returned by the +Thread#toString()+ method,
+the result is actually quite different:
+
+----
+% test
+ID      NAME                   GROUP           PRIORI STATE   %CPU    TIME    INTERR DAEMON
+37      pool-1-thread-10       main            5      RUNNABL 100     0:0     false  false
+----
+
+The explanation is simple: the thread object is sent in the pipe and hits the end of the pipe. At
+this moment CRaSH render those objects, it can of course use the +toString()+ method however
+specific renderers can be used to produce a more visual result for the user. Thread objects have
+a dedicated render that displays a nice table showing threads.
+
+This example shows that it is easy to produce an object in the pipe, however it produces a single
+object instance. Producing a stream of object can be achieved via the +InvocationContext+ object. A
+command method can declare an +InvocationContext+ among its argument list and use the +provide+ method
+during the invocation of the method
+
+[source,groovy]
+.The threads command list all the threads of the virtual machine
+----
+class threads {
+  @Command
+  void main(InvocationContext<Thread> context) { <1>
+    for (Thread thread : Thread.getAllStackTraces().keySet()) {
+      context.provide(thread); <2>
+    }
+  }
+}
+----
+<1> declares <Thread> as produced type
+<2> send a thread object in the pipe
+
+
+=== Pipe commands
+
+A pipe command declares a consumed type other than the +java.lang.Void+ type. Developing a pipe command
+is easy although it is a bit different from producer commands.
+
+Here is an example of a simple pipe:
+
+[source,groovy]
+.The daemons command filters the thread stream to retain on the daemons
+----
+import org.crsh.command.Pipe;
+
+class daemons {
+  @Command
+  Pipe<Thread, Thread> main() {
+    return new Pipe<Thread, Thread>() {    <1>
+      public void provide(Thread thread) { <2>
+        if (thread.isDaemon()) {
+          context.provide(thread);         <2>
+        }
+      }
+    };
+  }
+}
+----
+<1> A pipe command is a factory for +org.crsh.command.Pipe+ objects
+<2> The +provide+ method is invoked for each object of the stream
+<3> The +context+ object is an +InvocationContext+ used to produce daemon threads
+
+A pipe command is thus a factory for +org.crsh.command.Pipe+ objects, the pipe declaration specifies
+the type consumed and produced by the pipe, in this case the daemon command declares +Thread+ for both
+types.
+
+The +provide+ callback is invoked for each object of the stream, during this invocation, the pipe implementation
+can invoke the +context+ provide method to produce its objects. As our command filters threads to retain only the
+daemon threads, this is done only for daemon threads.
+
+Now let's continue our tour and write a pipe command that counts the number of objects in a pipe. This example
+is interesting because it demonstrates:
+
+* different consumed and produced types can be used
+* objects can be produced in the close method of the pipe
+
+[source,groovy]
+----
+import org.crsh.command.Pipe;
+
+class count {
+  @Command
+  Pipe<Object, Integer> main() {
+    return new Pipe<Object, Integer>() {
+      int value = 0;
+      public void provide(Object o) {
+        value++; <1>
+      }
+      public void close() {
+        context.provide(value); <2>
+      }
+    };
+  }
+}
+----
+<1> count the number of consumed objects
+<2> before closing we produce the count value
+
+Now we can combine those three commands to count the number of daemon threads:
+
+----
+% threads | daemons | count
+6
+----
+
+== Command interruption
+
+During the execution of a command, sometimes the user wants to interrupt the execution of the
+command, specially for long lived commands. The _ctrl-c_ keystroke in the shell will trigger
+a thread interruption during the execution a command.
+
+If you command thread is in the waiting state, an +InterruptedException+ will be thrown otherwise
+  you can check the current thread status with +Thread.currentThread.isInterrupted()+:
+
+[source,groovy]
+----
+class clock {
+  @Command
+  Object main(InvocationContext<Date> context) {
+    while (!Thread.currentThread().isInterrupted()) { <1>
+       context.provide(new Date());
+       context.flush();
+       try {
+         Thread.sleep(1000); <2>
+       } catch (InterruptedException e) {
+         Thread.currentThread().interrupt(); <3>
+         break;
+       }
+    }
+  }
+}
+----
+<1> check the thread has not been interrupted
+<2> sleep for 1 second
+<3> the command was interrupted while sleeping
+
+This producer command produces the current time in the object stream until the user interrupts
+it.
+
+----
+% clock
+Tue May 06 22:27:55 CEST 2014Tue May 06 22:27:56 CEST 2014Tue May 06 22:27:57 CEST 2014Tue May 06 22:27:58 CEST 2014Tue May 06 22:27:59 CEST 2014Tue May 06 22:28:00 CEST 2014Tue May 06 22:28:01 CEST 2014Tue May 06 22:28:02 CEST 2014Tue May 06 22:28:03 CEST 2014
+^C
+
+%
+----
+
+NOTE: when you are programming a long lived command that will stop upon a signal you should
+follow the pattern above and never forget to leave the thread in the interrupted state
+when your thread exits the command. We recommend also to understand well how Java thread interruption
+works.
+
+== Keyboard interactions
+
+A command can interact with the keyboard in two manners, either by reading a line (synchronous api) or by
+reacting to keyboard events (asynchronous api).
+
+=== Reading a line
+
+When a command needs to interact with they user to get input, it can use the +InvocationContext#readLine()+ method to
+prompt the user for a line of text.
+
+[source,groovy]
+----
+String line = context.readLine("tell me something", false);
+if (line != null) {
+  out.println("You wrote " + line);
+}
+----
+
+The returned line may be null sometimes so the command should handle this case properly.
+For instance, if the user intertupts the command while reading the line, then the line is null. Reading
+ a line is synchronous and blocking until the users hits the _enter_ key or interrupts the command.
+
+=== Keyboard events
+
+A command can also react to keyboard events by implementing the +org.crsh.keyboard.KeyHandler+ interface. Our
+previous clock example could be rewritten using this API:
+
+[source,groovy]
+----
+import org.crsh.keyboard.KeyHandler;
+import org.crsh.keyboard.KeyType;
+
+class clock implements KeyHandler {
+
+  final AtomicBoolean done = new AtomicBoolean(false);
+
+  @Override
+  void handle(KeyType type, int[] sequence) {
+    if (type == KeyType.CHARACTER && sequence[0] == 'q') {
+      done.set(true);
+    }
+  }
+
+  @Command
+  Object main(InvocationContext<Date> context) {
+    while (!done.get()) {
+       context.provide(new Date());
+       context.flush();
+       try {
+         Thread.sleep(1000);
+       } catch (InterruptedException e) {
+       }
+    }
+  }
+}
+----
+
+This command will stream until the user hits the _q_ key. The +KeyType+ allow to distinguish special key sequences whose
+sequence may vary according to the terminal:
+
+* +KeyType.UP+
+* +KeyType.DOWN+
+* +KeyType.LEFT+
+* +KeyType.RIGHT+
+* +KeyType.DELETE+
+* +KeyType.BACKSPACE+
+* +KeyType.ENTER+
+
+== Renderers
+
+We studied previously CRaSH object pipe: command push objects into the stream, when an object hits the
+end of the pipeline, it is printed on the user console. For character data, printing it an obvious operation.
+For other objects, the _renderer_ api can provide customized textual representation of the object.
+
+The _renderer_ api makes also writing command easier: a command can focus on the business part and just
+send objects in the pipe, if there is an appropriate renderer for it, it will be displayed nicely:
+
+[source,groovy]
+----
+class developers {
+  @Command
+  void main(InvocationContext<Map> context) {
+    context.provide([firstName:"Julien",lastName:"Viet"]);
+    context.provide([firstName:"Alain",lastName:"Defrance"]);
+    context.provide([firstName:"Arnaud",lastName:"Heritier"]);
+  }
+}
+----
+
+The _map_ renderer will format these three maps as a table:
+
+----
+% date
+firstName lastName
+------------------
+Julien    Viet
+Alain     Defrance
+Arnaud    Heritier
+----
+
+=== Predefined renderers
+
+CRaSH provides a few renderers out of the box:
+
+* LoggerRenderer : +java.util.logging.Logger+ objects
+* LogRecordRenderer : +java.util.logging.LogRecord+ objects
+* ThreadRenderer : +java.lang.Thread+ objects
+* MapRenderer : +java.util.Map+ objects
+* MemoryUsageRenderer : +java.lang.management.MemoryUsage+ objects
+
+=== Implementing a renderer
+
+Renderer implementation is not covered yet.

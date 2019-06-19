@@ -1,0 +1,16 @@
+----------------------------------------------------------------
+2019-02-09 02:35:20.187 GMT:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.6.2.1 - (999685): instance a816c00e-0168-d01b-f6d2-000059dc2de0 
+on database directory memory:/Users/nguyenthanhbinh/Blockchain/test/vnpay-crash/shell/db  with class loader sun.misc.Launcher$AppClassLoader@6bc7c054 
+Loaded from file:/Users/nguyenthanhbinh/.m2/repository/org/apache/derby/derby/10.6.2.1/derby-10.6.2.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_191-b12
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+2019-02-09 02:35:22.866 GMT:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.6.2.1 - (999685): instance f0e9813d-0168-d01b-f6d2-000059dc2de0 
+on database directory memory:/Users/nguyenthanhbinh/Blockchain/test/vnpay-crash/shell/EmbeddedDB  with class loader sun.misc.Launcher$AppClassLoader@6bc7c054 
+Loaded from file:/Users/nguyenthanhbinh/.m2/repository/org/apache/derby/derby/10.6.2.1/derby-10.6.2.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_191-b12
+Database Class Loader started - derby.database.classpath=''

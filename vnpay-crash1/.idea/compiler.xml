@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="crash.cli" />
+        <module name="crash.connectors.ssh" />
+        <module name="crash.connectors.telnet" />
+        <module name="crash.connectors.web" />
+        <module name="crash.distrib" />
+        <module name="crash.doc.api" />
+        <module name="crash.doc.cookbook" />
+        <module name="crash.doc.reference" />
+        <module name="crash.embed.spring" />
+        <module name="crash.packaging" />
+        <module name="crash.plugins.cron" />
+        <module name="crash.plugins.mail" />
+        <module name="crash.shell" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="crash.cli" target="1.5" />
+      <module name="crash.connectors" target="1.8" />
+      <module name="crash.connectors.ssh" target="1.8" />
+      <module name="crash.connectors.telnet" target="1.8" />
+      <module name="crash.connectors.web" target="1.8" />
+      <module name="crash.distrib" target="1.8" />
+      <module name="crash.doc" target="1.8" />
+      <module name="crash.doc.api" target="1.8" />
+      <module name="crash.doc.cookbook" target="1.8" />
+      <module name="crash.doc.reference" target="1.8" />
+      <module name="crash.embed" target="1.8" />
+      <module name="crash.embed.spring" target="1.8" />
+      <module name="crash.packaging" target="1.8" />
+      <module name="crash.plugins" target="1.8" />
+      <module name="crash.plugins.cron" target="6" />
+      <module name="crash.plugins.mail" target="6" />
+      <module name="crash.shell" target="1.8" />
+      <module name="vnpay-crash" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

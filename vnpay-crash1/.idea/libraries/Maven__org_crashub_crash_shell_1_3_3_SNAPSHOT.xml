@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.crashub:crash.shell:1.3.3-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/crashub/crash.shell/1.3.3-SNAPSHOT/crash.shell-1.3.3-20190203.085541-126.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/crashub/crash.shell/1.3.3-SNAPSHOT/crash.shell-1.3.3-20190203.085541-126-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/crashub/crash.shell/1.3.3-SNAPSHOT/crash.shell-1.3.3-20190203.085541-126-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

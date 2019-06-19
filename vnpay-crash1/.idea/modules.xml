@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cli/crash.cli.iml" filepath="$PROJECT_DIR$/cli/crash.cli.iml" />
+      <module fileurl="file://$PROJECT_DIR$/connectors/crash.connectors.iml" filepath="$PROJECT_DIR$/connectors/crash.connectors.iml" />
+      <module fileurl="file://$PROJECT_DIR$/connectors/ssh/crash.connectors.ssh.iml" filepath="$PROJECT_DIR$/connectors/ssh/crash.connectors.ssh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/connectors/telnet/crash.connectors.telnet.iml" filepath="$PROJECT_DIR$/connectors/telnet/crash.connectors.telnet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/connectors/web/crash.connectors.web.iml" filepath="$PROJECT_DIR$/connectors/web/crash.connectors.web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/distrib/crash.distrib.iml" filepath="$PROJECT_DIR$/distrib/crash.distrib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/doc/crash.doc.iml" filepath="$PROJECT_DIR$/doc/crash.doc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/doc/api/crash.doc.api.iml" filepath="$PROJECT_DIR$/doc/api/crash.doc.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/doc/cookbook/crash.doc.cookbook.iml" filepath="$PROJECT_DIR$/doc/cookbook/crash.doc.cookbook.iml" />
+      <module fileurl="file://$PROJECT_DIR$/doc/reference/crash.doc.reference.iml" filepath="$PROJECT_DIR$/doc/reference/crash.doc.reference.iml" />
+      <module fileurl="file://$PROJECT_DIR$/embed/crash.embed.iml" filepath="$PROJECT_DIR$/embed/crash.embed.iml" />
+      <module fileurl="file://$PROJECT_DIR$/embed/spring/crash.embed.spring.iml" filepath="$PROJECT_DIR$/embed/spring/crash.embed.spring.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packaging/crash.packaging.iml" filepath="$PROJECT_DIR$/packaging/crash.packaging.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/crash.plugins.iml" filepath="$PROJECT_DIR$/plugins/crash.plugins.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/cron/crash.plugins.cron.iml" filepath="$PROJECT_DIR$/plugins/cron/crash.plugins.cron.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/mail/crash.plugins.mail.iml" filepath="$PROJECT_DIR$/plugins/mail/crash.plugins.mail.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shell/crash.shell.iml" filepath="$PROJECT_DIR$/shell/crash.shell.iml" />
+    </modules>
+  </component>
+</project>
