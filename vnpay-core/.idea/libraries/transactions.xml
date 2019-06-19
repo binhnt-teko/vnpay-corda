@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="transactions">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/core/src/test/resources/net/corda/core/transactions/isolated-4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/core/src/test/resources/net/corda/core/transactions/old-isolated.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Cordapp-Workflow-Licence: Open Source (Apache 2)
+Cordapp-Contract-Vendor: R3
+Cordapp-Contract-Version: 1
+Cordapp-Contract-Name: Corda Finance Demo
+Cordapp-Workflow-Version: 1
+Target-Platform-Version: 5
+Sealed: true
+Cordapp-Workflow-Name: Corda Finance Demo
+Min-Platform-Version: 1
+Cordapp-Contract-Licence: Open Source (Apache 2)
+Cordapp-Workflow-Vendor: R3
+

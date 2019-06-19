@@ -1,0 +1,69 @@
+apply plugin: 'kotlin'
+apply plugin: 'net.corda.plugins.publish-utils'
+apply plugin: 'com.jfrog.artifactory'
+
+description 'Corda serialization'
+
+dependencies {
+//    compile files("libs/vnpay-corda-core.jar")
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile "io.reactivex:rxjava:$rxjava_version"
+    compile "org.hibernate:hibernate-core:$hibernate_version"
+    compile name: 'vnpay-corda-core'
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    compile "org.apache.activemq:artemis-commons:${artemis_version}"
+
+    compile "org.ow2.asm:asm:$asm_version"
+
+    compile "com.google.guava:guava:$guava_version"
+
+    // For AMQP serialisation.
+    compile "org.apache.qpid:proton-j:$protonj_version"
+
+    // ClassGraph: classpath scanning
+    compile "io.github.classgraph:classgraph:$class_graph_version"
+
+    // Pure-Java Snappy compression
+    compile "org.iq80.snappy:snappy:$snappy_version"
+
+    // For caches rather than guava
+    compile "com.github.ben-manes.caffeine:caffeine:$caffeine_version"
+
+    compile "org.slf4j:slf4j-api:$slf4j_version"
+    // Unit testing helpers.
+//    testCompile "junit:junit:$junit_version"
+//    testCompile "org.assertj:assertj-core:$assertj_version"
+//    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+//    testCompile project(':node-driver')
+}
+
+repositories {
+    flatDir {
+        dirs '../libs'
+    }
+}
+
+
+configurations {
+    testArtifacts.extendsFrom testRuntime
+}
+
+task testJar(type: Jar) {
+    classifier "tests"
+    from sourceSets.test.output
+}
+
+artifacts {
+    testArtifacts testJar
+}
+
+jar {
+    baseName 'vnpay-corda-serialization'
+}
+
+publish {
+    name jar.baseName
+}

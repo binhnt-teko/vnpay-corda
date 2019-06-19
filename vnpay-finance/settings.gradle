@@ -1,0 +1,6 @@
+rootProject.name = 'vnpay-finance'
+include 'finance'
+include 'finance:contracts'
+include 'finance:workflows'
+include 'confidential-identities'
+

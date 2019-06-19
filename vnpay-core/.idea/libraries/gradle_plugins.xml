@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="gradle-plugins">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/api-scanner-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/cordapp-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/publish-utils-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/jar-filter-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/cordformation-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/quasar-utils-4.0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/gradle-plugins/cordformation-4.0.39-fatjar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/confidential-identities" />
+        <option name="gradleHome" value="/Previous Content/Users/nguyenthanhbinh/Blockchain/test/vnpay-node" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/confidential-identities" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/finance" />
+        <option name="gradleHome" value="/Previous Content/Users/nguyenthanhbinh/Blockchain/test/vnpay-node" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/finance" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/finance-new" />
+        <option name="gradleHome" value="/Previous Content/Users/nguyenthanhbinh/Blockchain/test/vnpay-node" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/finance-new" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,13 @@
+rootProject.name = 'vnpay-core-deterministic'
+include 'create-jdk8u'
+//include 'djvm'
+//include 'djvm:cli'
+//
+//include 'jdk8u-deterministic'
+//if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+//    include 'jdk8u-deterministic'
+//    include 'core-deterministic'
+//}
+//
+
+

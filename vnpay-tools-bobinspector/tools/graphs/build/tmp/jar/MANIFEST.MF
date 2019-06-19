@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Corda-Platform-Version: 5
+Automatic-Module-Name: net.corda.tools.graphs
+Corda-Revision: 0a039e9094ab5794ee3de7489a8b1268116ae953
+Corda-Vendor: Corda Open Source
+Corda-Release-Version: 5.0-SNAPSHOT
+
